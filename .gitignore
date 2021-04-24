@@ -1,0 +1,17 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+.gradle/
+build/
+.project
+.settings
+.DS_Store
+.classpath
+bin/
+
+.vscode/
+node_modules/
