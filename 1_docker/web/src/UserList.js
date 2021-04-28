@@ -7,7 +7,7 @@ function UserList() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/all')
+    fetch('http://localhost/api/all')
       .then((res) => res.json())
       .then(
         (result) => {
@@ -28,13 +28,16 @@ function UserList() {
     return <div>Loading...</div>;
   } else if (items) {
     return (
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            {item.firstName} {item.lastName}
-          </li>
-        ))}
-      </ul>
+      <div>
+        <h2>User list: </h2>
+        <ul>
+          {items.map((item) => (
+            <li key={item.id}>
+              {item.firstName} {item.lastName}
+            </li>
+          ))}
+        </ul>
+      </div>
     );
   }
 }

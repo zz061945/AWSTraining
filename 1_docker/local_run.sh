@@ -4,7 +4,7 @@ docker compose down
 echo "Build app..."
 echo $PWD
 cd app
-./gradlew clean build
+./gradlew clean bootJar
 docker build -t zz061945/awstraining_1_app .
 
 echo "Build web..."

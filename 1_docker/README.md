@@ -32,7 +32,10 @@
         ```js
         fetch("http://localhost:8080/all)
         ```
-        测试证明这样是可行的，那么如果我想把后端隐藏在nginx后面该怎么办，这里使用nginx的地址？
+        测试证明这样是可行的，如果要将后端隐藏在nignx之后，则这里要使用nignx暴露的地址：
+        ```js
+        fetch("http://localhost/api/all")
+        ```
 ## 目前仍然存在的问题
 1. 前端如何在运行时选择后端地址？
    - 问题描述：想把后端的地址通过docker-compose的environment传到前端中，但是由于前端是静态部署，无法成功

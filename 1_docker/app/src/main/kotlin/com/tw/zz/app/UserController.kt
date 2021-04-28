@@ -14,4 +14,14 @@ class UserController(private val userRepository: UserRepository) {
     @PutMapping("/user")
     fun createUser(@RequestBody user: User) = userRepository.save(user)
 
+    @GetMapping("/mock")
+    fun mockData(): Iterable<User> =
+        userRepository.saveAll(
+            listOf(
+                User(null, "Tom", "Jerry"),
+                User(null, "Jams", "Bond"),
+                User(null, "Li", "Dazhuang")
+            )
+        )
+
 }
