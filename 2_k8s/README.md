@@ -6,22 +6,62 @@
 
 创建Deployment：
 ```shell
-kubectl apply -f simple-deployment.yaml
+$ kubectl apply -f simple-deployment.yaml
 ```
 暴露服务：
 ```shell
-kubectl create -f simple-service.yaml
+$ kubectl create -f simple-service.yaml
 
-minikube service simple-service
+$ minikube service simple-service
 ```
 运行CronJob，要求k8s server version在1.21.0及以上：
 ```shell
-kubectl create -f simple-cronjob.yaml
+$ kubectl create -f simple-cronjob.yaml
 ```
+使用Ingress暴露API，[参考](https://kubernetes.io/zh/docs/tasks/access-application-cluster/ingress-minikube/)：
+```shell
+# 普通的启动方式不支持ingress插件，必须以如下方式启动，如果之前以普通方式启动过，必须先删掉之前的minikube镜像重新下载
+$ minikube start --vm=true
+$ minikube addons enable ingress
 
+$ kubectl get pods -n ingress-nginx    
+NAME                                        READY   STATUS      RESTARTS   AGE
+ingress-nginx-admission-create-vphsg        0/1     Completed   0          16m
+ingress-nginx-admission-patch-frdt4         0/1     Completed   0          16m
+ingress-nginx-controller-5d88495688-fwchf   1/1     Running     0          16m
 
+$ kubectl create -f simple-deployment.yaml
+deployment.apps/simple-deployment created
 
+$ kubectl create -f simple-service.yaml   
+service/simple-service created
 
+$ kubectl get service simple-service 
+NAME             TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+simple-service   NodePort   10.102.10.234   <none>        80:32118/TCP   56s
+
+$ minikube service simple-service --url
+http://192.168.64.9:32118
+
+$ kubectl apply -f simple-ingress.yaml 
+ingress.networking.k8s.io/simple-ingress created
+
+$ kubectl get ingress                 
+NAME             CLASS    HOSTS                 ADDRESS   PORTS   AGE
+simple-ingress   <none>   simple-service.info             80      14s
+
+$ minikube ip       
+192.168.64.9
+
+$ kubectl create -f web2.yaml
+$ kubectl create -f web2-service.yaml
+$ kubectl apply -f simple-ingress.yaml
+
+$ curl hello-k8s.zz/v2                                                   
+Hello, world!
+Version: 2.0.0
+Hostname: web2-6c6cf9ffc5-bcz7j
+```
 
 ### Questions
 1. 简述 kubectl log / describe / apply / delete 命令的功能，[文档](https://kubernetes.io/zh/docs/reference/kubectl/overview/)
@@ -113,3 +153,5 @@ kubectl create -f simple-cronjob.yaml
     
       Kubernetest支持在一个物理集群上运行多个虚拟集群，这些虚拟集群被称为命名空间。
 
+## 遗留问题
+1. 通过Ingress暴露出来的web页面访问有问题，直接通过Ip访问就没问题
