@@ -167,3 +167,4 @@ Hostname: web2-6c6cf9ffc5-bcz7j
    $ minikube start --kubernetes-version v1.21.1
    ```
 3. 通过Ingress暴露出来的web页面访问有问题，直接通过Ip访问就没问题
+   看样子是Ingress的重定向的问题，可以参考这里：https://github.com/kubernetes/ingress-nginx/blob/master/docs/examples/rewrite/README.md
