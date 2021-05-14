@@ -154,4 +154,16 @@ Hostname: web2-6c6cf9ffc5-bcz7j
       Kubernetest支持在一个物理集群上运行多个虚拟集群，这些虚拟集群被称为命名空间。
 
 ## 遗留问题
-1. 通过Ingress暴露出来的web页面访问有问题，直接通过Ip访问就没问题
+1. minikube 安装Ingress插件失败
+   解决方案：
+   ```shell
+   $ minikube stop
+   $ minikube delete
+   $ minikube start --vm=true
+   ```
+2. 无法运行CronJob
+   原因：minikube自带的kubernetes server版本过低，必须在1.21.0以上才支持CronJob
+   ```shell
+   $ minikube start --kubernetes-version v1.21.1
+   ```
+3. 通过Ingress暴露出来的web页面访问有问题，直接通过Ip访问就没问题
