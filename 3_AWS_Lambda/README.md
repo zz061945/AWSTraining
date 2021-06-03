@@ -1,6 +1,6 @@
 # AWS Lambda
 
-## 问题：
+## 作业：
 
 1. What is serverless？
 
@@ -211,6 +211,30 @@
    ```shell
    aws lambda delete-function --function-name lambda-zhangzhen-cli
    ```
+
+## 遇到的问题及解决方案：
+
+1. 无法找到credential的问题
+
+   ```shell
+   $ aws iam create-role --role-name lambda-ex-zhangzhen-cli --assume-role-policy-document trust-policy.json
    
-   
+   Unable to locate credentials. You can configure credentials by running "aws configure".
+   ```
+
+   解决方法：
+
+   - 显示指定profile：
+
+     ```shell
+     $ aws iam create-role --role-name lambda-ex-zhangzhen-cli --profile tw-aws-beach --assume-role-policy-document trust-policy.json
+     ```
+
+   - 设置环境变量指定默认profile：
+
+     ```shell
+     $ export AWS_DEFAULT_PROFILE=tw-aws-beach
+     ```
+
+     
 

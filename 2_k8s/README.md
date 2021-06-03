@@ -1,6 +1,6 @@
 # Kubernetes
 
-## Home works
+## 作业
 
 ### 本地运行一个k8s集群
 
@@ -63,7 +63,7 @@ Version: 2.0.0
 Hostname: web2-6c6cf9ffc5-bcz7j
 ```
 
-### Questions
+### 问答
 1. 简述 kubectl log / describe / apply / delete 命令的功能，[文档](https://kubernetes.io/zh/docs/reference/kubectl/overview/)
     - `kubectl logs`: 打印Pod中容器的日志，[文档](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#logs)
       
