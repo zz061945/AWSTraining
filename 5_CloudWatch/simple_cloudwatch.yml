@@ -1,0 +1,99 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CloudWatch test"
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+            - sts:AssumeRole
+      Policies:
+        - PolicyName: "root"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+                - cloudWatch:*
+              Resource: arn:aws:logs:*:*:*
+            - Effect: "Allow"
+              Action: 
+                - cloudWatch:PutMetricData
+              Resource: "*"
+  SimpleLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: "Simple lambda triggered by CloudWatch events"
+      FunctionName: "lambda-cloudwatch-zz"
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: nodejs12.x
+      Code:
+        ZipFile: !Sub |
+          const AWS = require("aws-sdk");
+          AWS.config.region = (process.env.AWS_REGION);
+          var cloudwatch = new AWS.CloudWatch({apiVersion: '2010-08-01'});
+          exports.handler = async (event, context) => {
+            var params = {
+              Namespace: 'ZHEN_TW_AWS_CLOUDWATCH',
+              MetricData: [
+                {
+                  MetricName: 'ExecuteCount',
+                  "Dimensions": [
+                    {
+                      Name: 'Type',
+                      Value: 'triggerCount'
+                    }
+                  ],
+                  Unit: 'None',
+                  Value: 1
+                }
+              ]
+            }
+            console.log(await cloudwatch.putMetricData(params).promise());
+          };
+  ScheduleRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "An Event to trigger lambda"
+      ScheduleExpression: "rate(1 minute)"
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt SimpleLambda.Arn
+          Id: "SimpleLambda"
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref "SimpleLambda"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt ScheduleRule.Arn
+  CustomAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: "Alarm for count"
+      Namespace: "ZHEN_TW_AWS_CLOUDWATCH"
+      MetricName: "ExecuteCount"
+      Dimensions:
+        - Name: Type
+          Value: triggerCount
+      Statistic: SampleCount
+      Period: "60"
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+        - Ref: "EmailTopic"
+  EmailTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription: 
+      - Endpoint: "zhen.zhang@thoughtworks.com"
+        Protocol: email

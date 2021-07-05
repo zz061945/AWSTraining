@@ -76,6 +76,23 @@
    aws iam create-role --role-name lambda-ex-zhangzhen-cli  --profile tw-aws-beach --assume-role-policy-document file://trust-policy.json
    ```
    
+   trust-policy.json: 
+   
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Principal": {
+           "Service": "lambda.amazonaws.com"
+         },
+         "Action": "sts:AssumeRole"
+       }
+     ]
+   }
+   ```
+   
    Output:
    
    ```json
@@ -211,6 +228,33 @@
    ```shell
    aws lambda delete-function --function-name lambda-zhangzhen-cli
    ```
+   
+4. Create Lambda by aws cloudformation
+
+   1. Create a role in IAM with policy:
+
+      ```json
+      {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Action": "logs:CreateLogGroup",
+                  "Resource": "arn:aws:logs:ap-southeast-2:160071257600:*"
+              },
+              {
+                  "Effect": "Allow",
+                  "Action": [
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents"
+                  ],
+                  "Resource": "*"
+              }
+          ]
+      }
+      ```
+
+   2. Create stack with template file [lambda-cloudformation-template-zhen.yaml](./lambda-cloudformation-template-zhen.yaml)
 
 ## 遇到的问题及解决方案：
 
